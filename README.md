@@ -95,9 +95,26 @@ pytest test_modal_gpu.py
 ```
 *(Or simply `python test_modal_gpu.py` if configured as a script).*
 
+## Using the CLI (Setup, Check, Upgrade)
+
+This project includes a CLI (`src/cli.py`) to manage setup, verify versions, and perform safe upgrades.
+
+You can run the CLI from your terminal:
+```bash
+python -m src.cli setup
+python -m src.cli check
+python -m src.cli upgrade
+```
+
+*(If you are in a Jupyter Notebook, prefix with `!`, e.g., `!python -m src.cli setup`)*
+
+- **setup**: Creates necessary Modal volumes and pulls the initial model weights to the volume.
+- **check**: Scans your `config.yaml` against remote PyPI/npm versions and checks for safe upgrades.
+- **upgrade**: Automatically executes safe version upgrades defined in the config.
+
 ## Deployment
 
-Deploy the Modal app using the CLI. It is recommended to use module syntax.
+After running the `setup` command, deploy the Modal app using the Modal CLI. It is recommended to use the module syntax:
 ```bash
 modal deploy src.infrastructure.modal_app
 ```
