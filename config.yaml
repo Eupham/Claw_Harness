@@ -13,18 +13,17 @@ versions:
 modal:
   volume_name: "openclaw-qwen-weights"
   mount_path: "/data"
-  secrets:
-    - "huggingface-token" # Assumes a Modal Secret named 'huggingface-token' is set
+  secrets: [] # No secrets needed for public models
 
 # Hugging Face Models
 models:
   # Base or Instruct variant
-  default: "Qwen/Qwen3-14B-Instruct-2507"
+  default: "Qwen/Qwen2.5-14B-Instruct"
   # Coder variant
-  coder: "Qwen/Qwen3-Coder-30B-A3B-Instruct"
+  coder: "Qwen/Qwen2.5-Coder-14B-Instruct"
 
   # The model to be currently deployed
-  active: "Qwen/Qwen3-14B-Instruct-2507"
+  active: "Qwen/Qwen2.5-Coder-14B-Instruct"
 
 # Target GPU Specifications
 gpu:
@@ -33,11 +32,10 @@ gpu:
   memory_snapshot: true
 
 # Environment variables to pass to the Modal container
-# Note: You do NOT need any OpenAI or Anthropic API keys.
+# Note: You do NOT need any OpenAI or Anthropic API keys, nor Hugging Face tokens for public models.
 # Ensure the following environment variables are set locally before deployment:
 # - MODAL_TOKEN_ID: Your Modal Token ID
 # - MODAL_TOKEN_SECRET: Your Modal Token Secret
-# - HF_TOKEN: Your Hugging Face API token (must have access to gated models if needed)
 env:
   HF_HOME: "/data/huggingface"
   VLLM_SERVER_DEV_MODE: "1" # Exposes /sleep and /wake_up

@@ -13,10 +13,8 @@ You will need the following environment variables:
 # Modal Authentication (Required for Modal deployment)
 export MODAL_TOKEN_ID="your_modal_token_id"
 export MODAL_TOKEN_SECRET="your_modal_token_secret"
-
-# Hugging Face Authentication (Required to download models, especially gated ones)
-export HF_TOKEN="your_huggingface_api_token"
 ```
+*(No Hugging Face token is required, as the default models are public open-source weights!)*
 
 **For Python/Jupyter Notebooks:**
 If you are running the deployment or testing code inside a Python script or Jupyter Notebook, you need to set the environment variables using the `os` module. Do not use `export` inside Python cells.
@@ -26,9 +24,6 @@ import os
 # Modal Authentication
 os.environ["MODAL_TOKEN_ID"] = "your_modal_token_id"
 os.environ["MODAL_TOKEN_SECRET"] = "your_modal_token_secret"
-
-# Hugging Face Authentication
-os.environ["HF_TOKEN"] = "your_huggingface_api_token"
 ```
 
 ## Setup Instructions
@@ -47,7 +42,7 @@ os.environ["HF_TOKEN"] = "your_huggingface_api_token"
    ```
 
 **For Jupyter Notebooks:**
-If you are running the setup inside a Jupyter Notebook, we highly recommend using the included `setup.ipynb` notebook. It contains all the necessary commands in executable cells, including setting environment variables, installing dependencies (like `pytest`), creating the Modal secret, and deploying the app.
+If you are running the setup inside a Jupyter Notebook, we highly recommend using the included `setup.ipynb` notebook. It contains all the necessary commands in executable cells, including setting environment variables, installing dependencies (like `pytest`), running the setup CLI, and deploying the app.
 
 Alternatively, you can manually use magic commands (`!`, `%`) for shell operations. Note that you cannot mix Jupyter magics (`%`) inside a `%%bash` cell.
 
@@ -66,15 +61,6 @@ Alternatively, you can manually use magic commands (`!`, `%`) for shell operatio
    %pip install pytest
    ```
 
-3. **Configure Modal Secrets:**
-   You must set up Modal secrets so the deployment can access your Hugging Face token.
-   The `config.yaml` expects a secret named `huggingface-token`.
-
-   If you have the `HF_TOKEN` environment variable set, you can create the Modal secret using:
-   ```bash
-   modal secret create huggingface-token HF_TOKEN=$HF_TOKEN
-   ```
-
 ## Configuration (`config.yaml`)
 
 The `config.yaml` file holds the configuration for the Modal deployment, dependencies, models, and environment variables. The project uses `ruamel.yaml` to ensure formatting and comments are preserved when updated programmatically.
@@ -84,7 +70,7 @@ Key sections in `config.yaml`:
 - **modal**: Configuration for the Modal volume and required secrets.
 - **models**: Specifies the Hugging Face models to use (default, coder, active).
 - **gpu**: Defines the target GPU specification (e.g., A100:1) and whether to use memory snapshots.
-- **env**: Environment variables passed directly to the Modal container. This section now contains documentation for the necessary local environment variables (`MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET`, `HF_TOKEN`).
+- **env**: Environment variables passed directly to the Modal container. This section now contains documentation for the necessary local environment variables (`MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET`).
 - **vllm**: Settings for the vLLM engine, including port, host, max model length, and sleep mode for KV cache management.
 
 ## Running Tests
