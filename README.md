@@ -8,6 +8,7 @@ Before setting up and deploying, ensure you have the necessary API tokens export
 
 You will need the following environment variables:
 
+**For Terminal/Bash:**
 ```bash
 # Modal Authentication (Required for Modal deployment)
 export MODAL_TOKEN_ID="your_modal_token_id"
@@ -17,18 +18,50 @@ export MODAL_TOKEN_SECRET="your_modal_token_secret"
 export HF_TOKEN="your_huggingface_api_token"
 ```
 
+**For Python/Jupyter Notebooks:**
+If you are running the deployment or testing code inside a Python script or Jupyter Notebook, you need to set the environment variables using the `os` module. Do not use `export` inside Python cells.
+```python
+import os
+
+# Modal Authentication
+os.environ["MODAL_TOKEN_ID"] = "your_modal_token_id"
+os.environ["MODAL_TOKEN_SECRET"] = "your_modal_token_secret"
+
+# Hugging Face Authentication
+os.environ["HF_TOKEN"] = "your_huggingface_api_token"
+```
+
 ## Setup Instructions
 
+**For Terminal/Bash:**
 1. **Clone the repository:**
    ```bash
-   git clone <repository_url>
-   cd <repository_name>
+   git clone https://github.com/Eupham/Claw_Harness
+   cd Claw_Harness
    ```
 
 2. **Install requirements:**
    Install the necessary dependencies. This project strictly requires `modal>=1.4.1` and `vllm==0.18.1`.
    ```bash
    pip install -r requirements.txt
+   ```
+
+**For Jupyter Notebooks:**
+If you are running the setup inside a Jupyter Notebook, we highly recommend using the included `setup.ipynb` notebook. It contains all the necessary commands in executable cells, including setting environment variables, installing dependencies (like `pytest`), creating the Modal secret, and deploying the app.
+
+Alternatively, you can manually use magic commands (`!`, `%`) for shell operations. Note that you cannot mix Jupyter magics (`%`) inside a `%%bash` cell.
+
+1. **Clone and enter the directory:**
+   ```python
+   !git clone https://github.com/Eupham/Claw_Harness
+   %cd Claw_Harness
+   ```
+
+2. **Install requirements:**
+   Use the notebook-specific `%pip` magic and install `pytest`.
+   ```python
+   %pip install -r requirements.txt
+   %pip install pytest
    ```
 
 3. **Configure Modal Secrets:**
@@ -62,8 +95,8 @@ pytest test_modal_gpu.py
 
 ## Deployment
 
-Deploy the Modal app using the CLI (adjust the command based on the entry point if different):
+Deploy the Modal app using the CLI. The entry point is located in `src/infrastructure/modal_app.py`.
 ```bash
-modal deploy
+modal deploy src/infrastructure/modal_app.py
 ```
-*(Ensure you follow the Modal CLI usage as defined by your application's specific entry point in `src/`)*
+*(If you are running from a Jupyter Notebook, you can prefix this with `!`, e.g., `!modal deploy src/infrastructure/modal_app.py`)*
