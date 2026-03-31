@@ -34,6 +34,11 @@ gpu:
   memory_snapshot: true
 
 # Environment variables to pass to the Modal container
+# Note: You do NOT need any OpenAI or Anthropic API keys.
+# Ensure the following environment variables are set locally before deployment:
+# - MODAL_TOKEN_ID: Your Modal Token ID
+# - MODAL_TOKEN_SECRET: Your Modal Token Secret
+# - HF_TOKEN: Your Hugging Face API token (must have access to gated models if needed)
 env:
   HF_HOME: "/data/huggingface"
   VLLM_SERVER_DEV_MODE: "1" # Exposes /sleep and /wake_up
