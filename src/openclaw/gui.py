@@ -22,9 +22,10 @@ def openclaw_gui():
 
     # We use subprocess to run the long-lived openclaw process
     # `modal.web_server` takes care of proxying the external request to localhost:PORT
-    # OpenClaw's CLI should be run in verbose mode to capture logs
-    subprocess.Popen(
-        ["openclaw", "gateway", "--port", port, "--verbose"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT
+    # OpenClaw's CLI should be run in verbose mode to capture logs.
+    # Note: We must wait() for the subprocess, otherwise the function returns
+    # immediately and the Modal container exits, causing the link to keep spooling.
+    process = subprocess.Popen(
+        ["openclaw", "gateway", "--port", port, "--verbose"]
     )
+    process.wait()
