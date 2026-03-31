@@ -18,12 +18,12 @@ modal:
 # Hugging Face Models
 models:
   # Base or Instruct variant
-  default: "Qwen/Qwen2.5-14B-Instruct"
+  default: "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
   # Coder variant
-  coder: "Qwen/Qwen2.5-Coder-14B-Instruct"
+  coder: "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
 
   # The model to be currently deployed
-  active: "Qwen/Qwen2.5-Coder-14B-Instruct"
+  active: "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
 
 # Target GPU Specifications
 gpu:
