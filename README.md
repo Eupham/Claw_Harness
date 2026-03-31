@@ -64,7 +64,7 @@ If you are running the setup inside a Jupyter Notebook, use magic commands (`!`,
 3. **Configure Modal Secrets:**
    You must set up Modal secrets so the deployment can access your Hugging Face token.
    The `config.yaml` expects a secret named `huggingface-token`.
-
+   
    If you have the `HF_TOKEN` environment variable set, you can create the Modal secret using:
    ```bash
    modal secret create huggingface-token HF_TOKEN=$HF_TOKEN
