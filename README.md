@@ -8,7 +8,6 @@ Before setting up and deploying, ensure you have the necessary API tokens export
 
 You will need the following environment variables:
 
-**For Terminal/Bash:**
 ```bash
 # Modal Authentication (Required for Modal deployment)
 export MODAL_TOKEN_ID="your_modal_token_id"
