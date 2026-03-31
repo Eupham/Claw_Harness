@@ -1,0 +1,6 @@
+modal>=1.4.1
+vllm==0.18.1
+huggingface_hub>=0.24.0
+ruamel.yaml>=0.18.0
+click>=8.0
+requests>=2.31.0
