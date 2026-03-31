@@ -15,7 +15,6 @@ modal:
   mount_path: "/data"
   secrets:
     - "huggingface-token" # Assumes a Modal Secret named 'huggingface-token' is set
-    - "openclaw-secrets"
 
 # Hugging Face Models
 models:
