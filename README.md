@@ -47,7 +47,9 @@ os.environ["HF_TOKEN"] = "your_huggingface_api_token"
    ```
 
 **For Jupyter Notebooks:**
-If you are running the setup inside a Jupyter Notebook, use magic commands (`!`, `%`) for shell operations. Note that you cannot mix Jupyter magics (`%`) inside a `%%bash` cell.
+If you are running the setup inside a Jupyter Notebook, we highly recommend using the included `setup.ipynb` notebook. It contains all the necessary commands in executable cells, including setting environment variables, installing dependencies (like `pytest`), creating the Modal secret, and deploying the app.
+
+Alternatively, you can manually use magic commands (`!`, `%`) for shell operations. Note that you cannot mix Jupyter magics (`%`) inside a `%%bash` cell.
 
 1. **Clone and enter the directory:**
    ```python
@@ -56,15 +58,16 @@ If you are running the setup inside a Jupyter Notebook, use magic commands (`!`,
    ```
 
 2. **Install requirements:**
-   Use the notebook-specific `%pip` magic.
+   Use the notebook-specific `%pip` magic and install `pytest`.
    ```python
    %pip install -r requirements.txt
+   %pip install pytest
    ```
 
 3. **Configure Modal Secrets:**
    You must set up Modal secrets so the deployment can access your Hugging Face token.
    The `config.yaml` expects a secret named `huggingface-token`.
-   
+
    If you have the `HF_TOKEN` environment variable set, you can create the Modal secret using:
    ```bash
    modal secret create huggingface-token HF_TOKEN=$HF_TOKEN
@@ -92,8 +95,8 @@ pytest test_modal_gpu.py
 
 ## Deployment
 
-Deploy the Modal app using the CLI (adjust the command based on the entry point if different):
+Deploy the Modal app using the CLI. The entry point is located in `src/infrastructure/modal_app.py`.
 ```bash
-modal deploy
+modal deploy src/infrastructure/modal_app.py
 ```
-*(Ensure you follow the Modal CLI usage as defined by your application's specific entry point in `src/`)*
+*(If you are running from a Jupyter Notebook, you can prefix this with `!`, e.g., `!modal deploy src/infrastructure/modal_app.py`)*
