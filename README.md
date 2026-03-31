@@ -8,6 +8,7 @@ Before setting up and deploying, ensure you have the necessary API tokens export
 
 You will need the following environment variables:
 
+**For Terminal/Bash:**
 ```bash
 # Modal Authentication (Required for Modal deployment)
 export MODAL_TOKEN_ID="your_modal_token_id"
@@ -32,16 +33,32 @@ os.environ["HF_TOKEN"] = "your_huggingface_api_token"
 
 ## Setup Instructions
 
+**For Terminal/Bash:**
 1. **Clone the repository:**
    ```bash
-   git clone <repository_url>
-   cd <repository_name>
+   git clone https://github.com/Eupham/Claw_Harness
+   cd Claw_Harness
    ```
 
 2. **Install requirements:**
    Install the necessary dependencies. This project strictly requires `modal>=1.4.1` and `vllm==0.18.1`.
    ```bash
    pip install -r requirements.txt
+   ```
+
+**For Jupyter Notebooks:**
+If you are running the setup inside a Jupyter Notebook, use magic commands (`!`, `%`) for shell operations. Note that you cannot mix Jupyter magics (`%`) inside a `%%bash` cell.
+
+1. **Clone and enter the directory:**
+   ```python
+   !git clone https://github.com/Eupham/Claw_Harness
+   %cd Claw_Harness
+   ```
+
+2. **Install requirements:**
+   Use the notebook-specific `%pip` magic.
+   ```python
+   %pip install -r requirements.txt
    ```
 
 3. **Configure Modal Secrets:**
