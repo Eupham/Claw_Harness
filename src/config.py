@@ -46,7 +46,17 @@ class AppConfig:
     env: Dict[str, str]
     vllm: VLLMConfig
 
-def load_config(path: str = "config.yaml") -> AppConfig:
+def load_config(path: Optional[str] = None) -> AppConfig:
+    if path is None:
+        # Check if we are running inside the Modal container where we placed it at /root/config.yaml
+        if os.path.exists("/root/config.yaml"):
+            path = "/root/config.yaml"
+        else:
+            # Default to the config.yaml located in the root directory
+            # relative to this src/config.py file.
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            path = os.path.join(base_dir, "config.yaml")
+
     if not os.path.exists(path):
         raise FileNotFoundError(f"Configuration file not found: {path}")
 

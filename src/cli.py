@@ -117,7 +117,12 @@ def run_upgrade():
     yaml = YAML()
     yaml.preserve_quotes = True
 
-    with open("config.yaml", "r") as f:
+    # Determine absolute path to config.yaml
+    import os
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    config_path = os.path.join(base_dir, "config.yaml")
+
+    with open(config_path, "r") as f:
         data = yaml.load(f)
 
     # 1. Update vLLM
@@ -143,7 +148,7 @@ def run_upgrade():
         print(f"Failed to upgrade OpenClaw: {e}")
 
     # Save changes
-    with open("config.yaml", "w") as f:
+    with open(config_path, "w") as f:
         yaml.dump(data, f)
 
     print("Automatic upgrades complete. You can now run `modal deploy src.infrastructure.modal_app`")
