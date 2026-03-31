@@ -33,7 +33,7 @@ def run_setup():
         with app.run():
             download_model.remote(config.models.active)
 
-    print("\nSetup complete. You can now run `modal deploy src/infrastructure/modal_app.py`")
+    print("\nSetup complete. You can now run `modal deploy src.infrastructure.modal_app`")
 
 def get_latest_pypi_version(package: str) -> str:
     import requests
@@ -146,7 +146,7 @@ def run_upgrade():
     with open("config.yaml", "w") as f:
         yaml.dump(data, f)
 
-    print("Automatic upgrades complete. You can now run `modal deploy src/infrastructure/modal_app.py`")
+    print("Automatic upgrades complete. You can now run `modal deploy src.infrastructure.modal_app`")
 
 
 def main():

@@ -53,8 +53,10 @@ Alternatively, you can manually use magic commands (`!`, `%`) for shell operatio
 
 1. **Clone and enter the directory:**
    ```python
-   !git clone https://github.com/Eupham/Claw_Harness
-   %cd Claw_Harness
+   import os
+   if not os.path.exists("requirements.txt"):
+       !git clone https://github.com/Eupham/Claw_Harness
+       %cd Claw_Harness
    ```
 
 2. **Install requirements:**
@@ -95,8 +97,8 @@ pytest test_modal_gpu.py
 
 ## Deployment
 
-Deploy the Modal app using the CLI. The entry point is located in `src/infrastructure/modal_app.py`.
+Deploy the Modal app using the CLI. It is recommended to use module syntax.
 ```bash
-modal deploy src/infrastructure/modal_app.py
+modal deploy src.infrastructure.modal_app
 ```
-*(If you are running from a Jupyter Notebook, you can prefix this with `!`, e.g., `!modal deploy src/infrastructure/modal_app.py`)*
+*(If you are running from a Jupyter Notebook, you can prefix this with `!`, e.g., `!modal deploy src.infrastructure.modal_app`)*
