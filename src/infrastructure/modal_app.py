@@ -1,8 +1,14 @@
 import modal
 from src.config import load_config
 
+import os
+
 # Load central configuration
 config = load_config()
+
+# Locate config.yaml to copy it inside the container
+base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+config_path = os.path.join(base_dir, "config.yaml")
 
 # 1. Define the long-lived App
 app = modal.App(config.name)
@@ -24,6 +30,7 @@ vllm_image = (
         "fastapi",
         "uvicorn"
     )
+    .add_local_file(config_path, remote_path="/root/config.yaml")
 )
 
 # CPU Image (for OpenClaw)
@@ -40,6 +47,7 @@ openclaw_image = (
     .run_commands(
         f"npm install -g openclaw@{config.versions.openclaw}"
     )
+    .add_local_file(config_path, remote_path="/root/config.yaml")
 )
 
 # 5. Import endpoints to register them with the App instance
