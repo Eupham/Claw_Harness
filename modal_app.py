@@ -292,15 +292,20 @@ def openclaw_ui():
 
     print("[modal-openclaw] starting OpenClaw:", " ".join(safe_cmd), flush=True)
 
+    # Note on auto-approval: The background thread method fails sometimes if the gateway isn't fully ready.
+    # OpenClaw expects us to use the specific `OPENCLAW_GATEWAY_TOKEN` value provided in the config to authenticate the device on connection.
+    # The user provides this explicitly via the web UI.
+    # If the user explicitly sets `OPENCLAW_GATEWAY_TOKEN`, that acts as the initial bootstrap token for pairing.
+
     subprocess.Popen(openclaw_cmd)
 
     # Background thread to auto-approve devices
     import threading
     def auto_approve_devices():
         while True:
-            time.sleep(10)
+            time.sleep(5)
             try:
-                subprocess.run(["openclaw", "devices", "approve", "--latest"], capture_output=True)
+                subprocess.run(["openclaw", "devices", "approve", "--latest"], env=os.environ, capture_output=True)
             except Exception as e:
                 pass
 
@@ -308,3 +313,8 @@ def openclaw_ui():
 
     # Do not block here. Modal's web_server startup check will wait for port 18789.
     print("[modal-openclaw] OpenClaw process launched; Modal will expose port 18789.", flush=True)
+
+@app.local_entrypoint()
+def main():
+    print(f"To connect to the OpenClaw Control UI, go to the modal deployed web endpoint and use this Gateway Token: {OPENCLAW_GATEWAY_TOKEN}")
+    print("If it still requires pairing, you can run: `modal shell modal_app.py::app.openclaw_ui` to open a shell inside the container, then run: `openclaw devices approve --latest`")
