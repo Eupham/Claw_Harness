@@ -1,27 +1,22 @@
+
 import json
 import os
 import pathlib
 import subprocess
 import time
 import urllib.request
-import string
-import secrets
+import threading
 
 import modal
 
 
-APP_NAME = "openclaw-qwen-real-ui"
-MODEL_ID = "Qwen/Qwen1.5-0.5B-Chat"
-SERVED_MODEL_NAME = "qwen25-coder-7b"
-GPU = "A10G"
+APP_NAME = 'openclaw-qwen-real-ui-v2'
+MODEL_ID = 'Qwen/Qwen1.5-0.5B-Chat'
+SERVED_MODEL_NAME = 'qwen25-coder-7b'
+GPU = 'A10G'
 MAX_MODEL_LEN = 8192
-VLLM_API_KEY = "modal-local-vllm"
-
-# Load the gateway token securely. For simplicity in this demo, generate it dynamically if not provided.
-OPENCLAW_GATEWAY_TOKEN = os.environ.get("OPENCLAW_GATEWAY_TOKEN", "".join(
-    secrets.choice(string.ascii_letters + string.digits + "-_")
-    for _ in range(64)
-))
+VLLM_API_KEY = 'modal-local-vllm'
+OPENCLAW_GATEWAY_TOKEN = 'ucNIk6vnyOTfamLp7NAVzJd9b-W7Y9PjQQ5kbF6Jc38LAYHelxPo9FEkYunwEbrN'
 
 OPENCLAW_PORT = 18789
 VLLM_PORT = 8000
@@ -49,7 +44,6 @@ image = (
         "node --version",
         "npm --version",
         "npm install -g openclaw@latest",
-        # Preinstall deps OpenClaw was trying to stage during gateway startup.
         "npm install -g "
         "@agentclientprotocol/claude-agent-acp@0.31.0 "
         "@homebridge/ciao@^1.3.6 "
@@ -91,7 +85,7 @@ def _write_openclaw_config():
         "gateway": {
             "mode": "local",
             "auth": {
-                "mode": "token"
+                "mode": "none"
             },
             "controlUi": {
                 "enabled": True,
@@ -151,8 +145,6 @@ def _write_openclaw_config():
     token_path.write_text(OPENCLAW_GATEWAY_TOKEN + "\n", encoding="utf-8")
     print(f"[modal-openclaw] wrote token file: {token_path}", flush=True)
 
-    print("[modal-openclaw] effective gateway.controlUi.allowedOrigins = ['*']", flush=True)
-
 
 def _wait_for_http(url, *, label, headers=None, timeout_s=1200, process=None):
     deadline = time.time() + timeout_s
@@ -190,29 +182,6 @@ def _wait_for_http(url, *, label, headers=None, timeout_s=1200, process=None):
         "/mnt/openclaw-home": openclaw_home,
     },
     timeout=60 * 60,
-)
-def download_model():
-    import subprocess
-
-    print(f"[modal-openclaw] pre-downloading model with hf: {MODEL_ID}", flush=True)
-
-    subprocess.run(
-        ["hf", "download", MODEL_ID],
-        check=True,
-    )
-
-    print("[modal-openclaw] model download/cache step complete", flush=True)
-
-
-@app.function(
-    image=image,
-    gpu=GPU,
-    volumes={
-        "/root/.cache/huggingface": hf_cache,
-        "/mnt/vllm-cache": vllm_cache,
-        "/mnt/openclaw-home": openclaw_home,
-    },
-    timeout=60 * 60,
     max_containers=1,
 )
 @modal.web_server(port=OPENCLAW_PORT, startup_timeout=30 * 60)
@@ -229,11 +198,6 @@ def openclaw_ui():
     pathlib.Path("/mnt/openclaw-home").mkdir(parents=True, exist_ok=True)
 
     _write_openclaw_config()
-
-    print("[modal-openclaw] HOME=" + os.environ["HOME"], flush=True)
-    print("[modal-openclaw] OPENCLAW_HOME=" + os.environ["OPENCLAW_HOME"], flush=True)
-    print("[modal-openclaw] OPENCLAW_CONFIG_PATH=" + os.environ["OPENCLAW_CONFIG_PATH"], flush=True)
-    print("[modal-openclaw] OpenClaw gateway token:", OPENCLAW_GATEWAY_TOKEN, flush=True)
 
     vllm_cmd = [
         "vllm",
@@ -278,9 +242,7 @@ def openclaw_ui():
         "--bind",
         "lan",
         "--auth",
-        "token",
-        "--token",
-        OPENCLAW_GATEWAY_TOKEN,
+        "none",
         "--allow-unconfigured",
         "--verbose",
     ]
@@ -292,15 +254,8 @@ def openclaw_ui():
 
     print("[modal-openclaw] starting OpenClaw:", " ".join(safe_cmd), flush=True)
 
-    # Note on auto-approval: The background thread method fails sometimes if the gateway isn't fully ready.
-    # OpenClaw expects us to use the specific `OPENCLAW_GATEWAY_TOKEN` value provided in the config to authenticate the device on connection.
-    # The user provides this explicitly via the web UI.
-    # If the user explicitly sets `OPENCLAW_GATEWAY_TOKEN`, that acts as the initial bootstrap token for pairing.
-
     subprocess.Popen(openclaw_cmd)
 
-    # Background thread to auto-approve devices
-    import threading
     def auto_approve_devices():
         while True:
             time.sleep(5)
@@ -311,10 +266,4 @@ def openclaw_ui():
 
     threading.Thread(target=auto_approve_devices, daemon=True).start()
 
-    # Do not block here. Modal's web_server startup check will wait for port 18789.
     print("[modal-openclaw] OpenClaw process launched; Modal will expose port 18789.", flush=True)
-
-@app.local_entrypoint()
-def main():
-    print(f"To connect to the OpenClaw Control UI, go to the modal deployed web endpoint and use this Gateway Token: {OPENCLAW_GATEWAY_TOKEN}")
-    print("If it still requires pairing, you can run: `modal shell modal_app.py::app.openclaw_ui` to open a shell inside the container, then run: `openclaw devices approve --latest`")
